@@ -1,5 +1,4 @@
 import logging
-from LocalLogger import logger
 
 INDENTATION_WIDTH = 4
 
@@ -24,9 +23,17 @@ class ContentBuilder:
         return self
 
 class ContentElement:
-    def __init__(self, addSelf = lambda builder : logger.warning(
-    f"Default builder provided! Doing nothing!")):
-        self.addSelf = addSelf
+    def __init__(self):
+        return
+
+    def addSelf(self, builder):
+        logging.warning(f"Virtual addSelf called! Doing nothing!")
+
+    def __lshift__(self, other):
+        logging.warning(f"Virtual __lshift__ called! Doing nothing!")
+        return self
+
+
 
 class StringElement(ContentElement):
     def __init__(self, string):
@@ -60,6 +67,11 @@ class StringElement(ContentElement):
             builder.string += "\n"
         builder.string += " "*builder.indentation
         builder.string += self.string
+    def __str__(self):
+        return self.string
+    def __repr__(self):
+        stringExtract = self.string[0:max(10,len(self.string))].__repr__()
+        return f"String element: {stringExtract}"
 
 class HtmlElement(ContentElement):
     def __init__(self, name, contents = None, properties = None, indent = True, selfClosing = False):
@@ -70,15 +82,17 @@ class HtmlElement(ContentElement):
             self.contents = contents
         else:
             self.contents = [contents]
-        self.properties = properties
+        if properties is None:
+            self.properties = {}
+        else:
+            self.properties = properties
         self.indent = indent
         self.selfClosing = selfClosing
 
     def addSelf(self, builder):
         tagString = f"<{self.name}"
-        if self.properties is not None:
-            for prop, value in self.properties.items():
-                tagString += f" {prop}={value}"
+        for prop, value in self.properties.items():
+            tagString += f" {prop}={value}"
         if self.selfClosing:
             tagString += "/"
         tagString += ">"
@@ -99,12 +113,14 @@ class HtmlElement(ContentElement):
     def __lshift__(self, other):
         if type(other) is dict:
             for key, val in other.items():
-                self.properties[key] = value
+                self.properties[key] = val
         else:
+            if type(other) is str:
+                other = StringElement(other)
             self.contents.append(other)
         return self
 
-    def __str__(self):
+    def __repr__(self):
         string = "{"
         string += f"name: {self.name}, "
         string += f"contents: {self.contents}, "
@@ -114,5 +130,3 @@ class HtmlElement(ContentElement):
         string += "}"
         return string
 
-    def __repr__(self):
-        return str(self)

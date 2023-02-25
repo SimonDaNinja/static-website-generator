@@ -1,6 +1,9 @@
 import constants
+import logging
 import shutil
+import Adds
 from ContentBuilder import HtmlElement, ContentBuilder
+import logging
 
 class WebsiteBuilder:
     def __init__(self, cssPathOriginal, lang):
@@ -16,34 +19,63 @@ class WebsiteBuilder:
             self.pages.append(page)
         return self
 
-    def addHeadElement(self, htmlElement, page):
-        headElement = HtmlElement("head")
-        headElement << HtmlElement("title", contents = "korv")
-        headElement << HtmlElement("link", properties = {
-                                                    "rel":"'stylesheet'",
-                                                    "type":"'text/css'",
-                                                    "href":f"{self.cssHref}"})
-        headElement << HtmlElement("meta", properties = {"charset":"\"UTF-8\""})
-        headElement << HtmlElement("meta", properties = {
-                                                    "name":"\"Description\"",
-                                                    "content":f"\"{page.description}\""
-                                                    })
-        htmlElement << headElement
-        return htmlElement
-
-    def addBodyElement(self, htmlElement, page):
-        htmlElement << (HtmlElement("body") << open(page.bodyfile, 'r').read())
-        return htmlElement
+    def addElement(self, contentBuilder, elementStack, newElement):
+        if elementStack:
+            targetForElement = elementStack[-1]
+            targetStr = f"{targetForElement.__repr__()}"
+        else:
+            targetForElement = contentBuilder
+            targetStr = f"contentBuilder"
+        logging.debug(f"adding element: {newElement.__repr__()}; target is: {targetStr}")
+        targetForElement << newElement
 
     def pageToHtml(self, page):
+        logging.debug("generating HTML from Page Object")
         contentBuilder = ContentBuilder()
-        contentBuilder << HtmlElement("!DOCTYPE html")
+        elementStack = []
+        previousElement = None
+        queuedPop = False
+        for adder in page.adders:
+            # adder can be of an Adder class, or it could be a direction
+            # first check if it is a direction, and if so, handle it as such
+            if type(adder) is Adds.Direction:
+                if queuedPop:
+                    elementStack.pop()
+                    queuedPop = False
 
-        htmlElement = HtmlElement("html", properties = {"lang":f"\"{self.lang}\""})
-        self.addHeadElement(htmlElement, page)
-        self.addBodyElement(htmlElement, page)
-        
-        contentBuilder << htmlElement
+                if adder == Adds.Direction.IN:
+                    if previousElement is not None:
+                        elementStack.append(previousElement)
+                        previousElement = None
+                elif adder == Adds.Direction.OUT:
+                    if len(elementStack) > 1:
+                        queuedPop = True
+                else:
+                    logging.warning(f"unknown direction: {adder}")
+                continue
+            # if we reach here, then adder is not a direction, and should be handled
+            # as an adder
+
+            if previousElement is not None:
+                self.addElement(contentBuilder, elementStack, previousElement)
+
+            if queuedPop:
+                stackedElement = elementStack.pop()
+                self.addElement(contentBuilder, elementStack, stackedElement)
+                queuedPop = False
+
+            previousElement = adder.add(page, self)
+
+        if previousElement is not None:
+            self.addElement(contentBuilder, elementStack, previousElement)
+        if queuedPop:
+            stackedElement = elementStack.pop()
+            self.addElement(contentBuilder, elementStack, stackedElement)
+            queuedPop = False
+
+        while elementStack:
+            stackedElement = elementStack.pop()
+            self.addElement(contentBuilder, elementStack, stackedElement)
 
         return str(contentBuilder)
 
