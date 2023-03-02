@@ -11,12 +11,14 @@ class WebsiteBuilder:
         self.cssPathCopy = "/".join([constants.WEBSITE_PATH, cssPathOriginal])
         self.cssHref = self.cssPathCopy.split(constants.WEBSITE_PATH)[-1]
         self.lang = lang
-        self.pages = []
-        return
+        self.categories = []
 
-    def addPages(self, pages):
-        for page in pages:
-            self.pages.append(page)
+    def addCategory(self, category):
+        self.categories.append(category)
+        return self
+
+    def addCategories(self, categories):
+        self.categories += categories
         return self
 
     def addElement(self, contentBuilder, elementStack, newElement):
@@ -81,6 +83,8 @@ class WebsiteBuilder:
 
     def build(self):
         shutil.copyfile(self.cssPathOriginal, self.cssPathCopy)
-        for page in self.pages:
-            absoluteOutputFile = "/".join([constants.WEBSITE_PATH, page.relativeOutputFile])
-            open(absoluteOutputFile, 'w').write(self.pageToHtml(page))
+        for category in self.categories:
+            category.setPageAdders()
+            for page in category.pages:
+                absoluteOutputFile = "/".join([constants.WEBSITE_PATH, category.relativeOutputDir, page.relativeOutputFile])
+                open(absoluteOutputFile, 'w').write(self.pageToHtml(page))

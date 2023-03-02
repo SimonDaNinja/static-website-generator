@@ -6,16 +6,17 @@ from ContentBuilder import HtmlElement, ContentBuilder
 import logging
 import Adds
 from LinkMenu import LinkMenuItem
+from PageCategory import PageCategory
 
 logging.basicConfig(format="%(levelname)s [%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s")
 
 class Page:
-    def __init__(self, title, description, bodyfile, relativeOutputFile, adders):
+    def __init__(self, title, description, bodyfile, relativeOutputFile):
         self.title = title
         self.description = description
         self.bodyfile = bodyfile
         self.relativeOutputFile = relativeOutputFile
-        self.adders = adders
+        self.adders = []
 
 preAdders = [Adds.DoctypeElementAdder(),
              Adds.HtmlElementAdder(),
@@ -26,6 +27,7 @@ midAdders = [Adds.BodyElementAdder(),
              Adds.PageContentAdder(),
              Adds.BulletLinkMenuAdder([LinkMenuItem() for i in range(5)]),
              Adds.Direction.OUT]
+basicPageAdders = preAdders + midAdders
 
 if __name__ == "__main__":
 
@@ -40,6 +42,7 @@ if __name__ == "__main__":
 
     cssFile = cssFiles.pop()
     pages = [
-                Page("korv", "korv är gött", "index.html", "index.html", preAdders + midAdders)
+                Page("korv", "korv är gött", "index.html", "index.html")
             ]
-    WebsiteBuilder("style.css", "sv").addPages(pages).build()
+    rootCategory = PageCategory("Root", pages, basicPageAdders, "")
+    WebsiteBuilder("style.css", "sv").addCategory(rootCategory).build()
