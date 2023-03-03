@@ -1,4 +1,5 @@
 import constants
+import os
 import logging
 import shutil
 import Adds
@@ -7,11 +8,13 @@ import logging
 
 class WebsiteBuilder:
 
-    def __init__(self, cssPathOriginal, lang):
+    def __init__(self, cssPathOriginal, lang, fullTitle, briefTitle):
         self.cssPathOriginal = cssPathOriginal
         self.cssPathCopy = "/".join([constants.WEBSITE_PATH, cssPathOriginal])
         self.cssHref = self.cssPathCopy.split(constants.WEBSITE_PATH)[-1]
         self.lang = lang
+        self.fullTitle = fullTitle
+        self.briefTitle = briefTitle
         self.categories = []
 
     def addCategory(self, category):
@@ -33,7 +36,7 @@ class WebsiteBuilder:
         targetForElement << newElement
 
     def pageToHtml(self, page, category):
-        logging.debug("generating HTML from Page Object")
+        logging.debug(f"generating HTML from Page Object for:\npage: {page.fullTitle}\n, category: {category.categoryName}")
         contentBuilder = ContentBuilder()
         elementStack = []
         previousElement = None
@@ -85,6 +88,9 @@ class WebsiteBuilder:
     def build(self):
         shutil.copyfile(self.cssPathOriginal, self.cssPathCopy)
         for category in self.categories:
+            absoluteOutputDir = "/".join([constants.WEBSITE_PATH, category.relativeOutputDir])
+            if not os.path.exists(absoluteOutputDir):
+                os.makedirs(absoluteOutputDir)
             for page in category.pages:
                 absoluteOutputFile = "/".join([constants.WEBSITE_PATH, page.getRelativeOutputFile(category)])
                 open(absoluteOutputFile, 'w').write(self.pageToHtml(page, category))

@@ -13,6 +13,18 @@ class BulletLinkMenuElement(LinkMenuElement):
             listElement << listItemElement
         builder << listElement
 
+class LegacySoffanTopbarMenuElement(LinkMenuElement):
+    def addSelf(self, builder):
+        headerElement = ContentBuilder.HtmlElement("h2")
+        separator = " | "
+        addSeparator = False
+        for item in self.menuItems:
+            if addSeparator:
+                headerElement << separator
+            headerElement << item.getLinkElement()
+            addSeparator = True
+        builder << headerElement
+
 class LinkMenuItem:
     def __init__(self, text, href):
         self.text = text

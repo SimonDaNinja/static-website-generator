@@ -5,29 +5,12 @@ from WebsiteBuilder import WebsiteBuilder
 from ContentBuilder import HtmlElement, ContentBuilder
 import logging
 import Adds
-from LinkMenu import LinkMenuItem
+from LinkMenu import LegacySoffanTopbarMenuElement, LinkMenuItem
 from PageCategory import PageCategory
+from Page import Page, CategoryPage
 
-logging.basicConfig(format="%(levelname)s [%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s")
+logging.basicConfig(format="%(levelname)s [%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s")#, level=logging.DEBUG)
 
-class Page:
-    def __init__(self, title, description, bodyfile, fileName):
-        self.title = title
-        self.description = description
-        self.bodyfile = bodyfile
-        self.fileName = fileName
-
-    def getRelativeOutputFile(self, category):
-        return "/".join([category.relativeOutputDir, self.fileName])
-
-preAdders = [Adds.DoctypeElementAdder(),
-             Adds.HtmlElementAdder(),
-             Adds.Direction.IN, # into HTML element
-             Adds.HeadElementAdder()]
-midAdders = [Adds.BodyElementAdder(),
-             Adds.Direction.IN, # into body element
-             Adds.PageContentAdder()] 
-basicPageAdders = preAdders + midAdders
 
 if __name__ == "__main__":
 
@@ -41,12 +24,55 @@ if __name__ == "__main__":
     assert len(cssFiles) == 1, "too many css files; only one allowed"
 
     cssFile = cssFiles.pop()
-    pages = [
-                Page("korv", "korv är gött", "index.html", "index.html"),
-                Page("kielbasa", "kielbasa är gött", "kielbasa.html", "kielbasa.html"),
-                Page("chorizo", "chorizo är gött", "chorizo.html", "chorizo.html")
-            ]
-    rootCategory = PageCategory("Root", pages, basicPageAdders, "")
-    rootCategory.addAdder(Adds.CategoryMenuAdder(rootCategory))
-    rootCategory.addAdder(Adds.Direction.OUT) # out from body element
-    WebsiteBuilder("style.css", "sv").addCategory(rootCategory).build()
+    #root category
+    korvPage = Page("Detta är en korvhemsida om korvar", "Korv", "Korv är gött", "index.html", "index.html")
+    rootPages = [korvPage]
+    rootCategory = PageCategory("Root", rootPages, "")
+
+    #foreign sausage category
+    kielbasaPage = Page("Detta är en korvhemsida om kielbasa", "Kielbasa", "Kielbasa är gött", "kielbasa.html", "kielbasa.html")
+    foreignSausageCategory = PageCategory("Utländsk korv", [kielbasaPage], "utländsk korv", superCategory = rootCategory)
+
+    #chorizo category
+    chiliChorizoPage = Page("Detta är en korvhemsida om chilichorizo", "Chilichorizo", "Chilichorizo är gött", "chilichorizo.html", "chilichorizo.html")
+    ostChorizoPage = Page("Detta är en korvhemsida om ostchorizo", "Ostchorizo", "Ostchorizo är gött", "ostchorizo.html", "ostchorizo.html")
+    chorizoCategory = PageCategory("Chorizo", [chiliChorizoPage, ostChorizoPage], "chorizo", superCategory = foreignSausageCategory)
+
+    #add chorizo page to foreign sausage category
+    chorizoPage = CategoryPage(chorizoCategory, "Sidor om chorizo", chorizoCategory.categoryName, "chorizo är gött", "chorizo.html")
+    foreignSausageCategory.addPage(chorizoPage)
+
+    #category category
+    foreignSausagePage = CategoryPage(foreignSausageCategory, "Sidor om utländsk korv", foreignSausageCategory.categoryName, "Utländsk korv är gött", "utländsk korv.html")
+    categoryPageCategory = PageCategory("Kategorisidor", [foreignSausagePage], "")
+
+    topMenuOptions = [LinkMenuItem(korvPage.briefTitle, "/"),
+                      LinkMenuItem(foreignSausagePage.briefTitle, foreignSausagePage.getUrl(categoryPageCategory))]
+
+    preAdders = [Adds.DoctypeElementAdder(),
+                 Adds.HtmlElementAdder(),
+                 Adds.Direction.IN,       # into HTML element
+                 Adds.HeadElementAdder()]
+
+    obligatoryPageBodyAdders = [Adds.BodyElementAdder(),
+                                Adds.Direction.IN,       # into body element
+                                Adds.WebsiteFullTitleH1Adder(),
+                                Adds.LinkMenuAdder(topMenuOptions, LinkMenuElementClass = LegacySoffanTopbarMenuElement),
+                                Adds.NavigationHelperAdder(),
+                                Adds.PageFullTitleH2Adder()]
+
+    normalPageBodyAdders = obligatoryPageBodyAdders + \
+                           [Adds.CategoryBriefMenuAdder(),
+                            Adds.PageContentAdder(),
+                            Adds.Direction.OUT]      # out from body element
+
+    basicPageAdders = preAdders + normalPageBodyAdders
+    rootCategory.addAdders(basicPageAdders)
+    foreignSausageCategory.addAdders(basicPageAdders)
+    categoryPageCategory.addAdders(basicPageAdders)
+    chorizoCategory.addAdders(basicPageAdders)
+    WebsiteBuilder("style.css", "sv", "🌭Simons korvar", "🌭Simons korvar") \
+        .addCategory(rootCategory) \
+        .addCategory(foreignSausageCategory) \
+        .addCategory(chorizoCategory) \
+        .addCategory(categoryPageCategory).build()

@@ -75,6 +75,13 @@ class StringElement(ContentElement):
         stringExtract = self.string[0:max(10,len(self.string))].__repr__()
         return f"String element: {stringExtract}"
 
+class NullElement(ContentElement):
+    def addSelf(self, builder):
+        return
+
+    def __lshift__(self, other):
+        return self
+
 class HtmlElement(ContentElement):
     def __init__(self, name, contents = None, properties = None, indent = True, selfClosing = False):
         self.name = name
