@@ -71,12 +71,12 @@ class CategoryMenuAdder(LinkMenuAdder):
 
 class CategoryFullMenuAdder(CategoryMenuAdder):
     def __init__(self, category = None, *args, LinkMenuElementClass = DefaultLinkMenuElement, **kwargs):
-        super().__init__(*args, category = category, brief = False, **kwargs)
+        super().__init__(*args, category = category, brief = False, LinkMenuElementClass = LinkMenuElementClass, **kwargs)
         self.category = category
 
 class CategoryBriefMenuAdder(CategoryMenuAdder):
     def __init__(self, category = None, *args, LinkMenuElementClass = DefaultLinkMenuElement, **kwargs):
-        super().__init__(*args, category = category, brief = True, **kwargs)
+        super().__init__(*args, category = category, brief = True, LinkMenuElementClass = LinkMenuElementClass, **kwargs)
         self.category = category
 
 class HtmlElementAdder(Adder):

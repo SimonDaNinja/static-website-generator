@@ -44,10 +44,7 @@ if __name__ == "__main__":
 
     #category category
     foreignSausagePage = CategoryPage(foreignSausageCategory, "Sidor om utländsk korv", foreignSausageCategory.categoryName, "Utländsk korv är gött", "utländsk korv.html")
-    categoryPageCategory = PageCategory("Kategorisidor", [foreignSausagePage], "")
-
-    topMenuOptions = [LinkMenuItem(korvPage.briefTitle, "/"),
-                      LinkMenuItem(foreignSausagePage.briefTitle, foreignSausagePage.getUrl(categoryPageCategory))]
+    rootCategory.addPage(foreignSausagePage)
 
     basicPageAdders = [Adds.DoctypeElementAdder(),
                        Adds.HtmlElementAdder(),
@@ -56,7 +53,7 @@ if __name__ == "__main__":
                        Adds.BodyElementAdder(),
                        Adds.Direction.IN,       # into body element
                        Adds.WebsiteFullTitleH1Adder(),
-                       Adds.LinkMenuAdder(topMenuOptions, LinkMenuElementClass = LegacySoffanTopbarMenuElement),
+                       Adds.CategoryBriefMenuAdder(category = rootCategory, LinkMenuElementClass = LegacySoffanTopbarMenuElement),
                        Adds.NavigationHelperAdder(),
                        Adds.PageFullTitleH2Adder(),
                        Adds.CategoryBriefMenuAdder(),
@@ -65,10 +62,8 @@ if __name__ == "__main__":
 
     rootCategory.addAdders(basicPageAdders)
     foreignSausageCategory.addAdders(basicPageAdders)
-    categoryPageCategory.addAdders(basicPageAdders)
     chorizoCategory.addAdders(basicPageAdders)
     WebsiteBuilder("style.css", "sv", "🌭Simons korvar", "🌭Simons korvar") \
         .addCategory(rootCategory) \
         .addCategory(foreignSausageCategory) \
-        .addCategory(chorizoCategory) \
-        .addCategory(categoryPageCategory).build()
+        .addCategory(chorizoCategory).build()
