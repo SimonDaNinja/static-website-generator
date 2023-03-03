@@ -26,7 +26,3 @@ class PageCategory:
 
     def addAdders(self, adders):
         self.adders += adders
-
-    def setPageAdders(self):
-        for page in self.pages:
-            page.adders = self.adders

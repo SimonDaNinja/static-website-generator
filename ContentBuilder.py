@@ -19,6 +19,8 @@ class ContentBuilder:
         elif isinstance(other, ContentElement):
             other.addSelf(self)
         else:
+            print(type(other))
+            print(other)
             raise TypeError
         return self
 

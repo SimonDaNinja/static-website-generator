@@ -11,22 +11,22 @@ from PageCategory import PageCategory
 logging.basicConfig(format="%(levelname)s [%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s")
 
 class Page:
-    def __init__(self, title, description, bodyfile, relativeOutputFile):
+    def __init__(self, title, description, bodyfile, fileName):
         self.title = title
         self.description = description
         self.bodyfile = bodyfile
-        self.relativeOutputFile = relativeOutputFile
-        self.adders = []
+        self.fileName = fileName
+
+    def getRelativeOutputFile(self, category):
+        return "/".join([category.relativeOutputDir, self.fileName])
 
 preAdders = [Adds.DoctypeElementAdder(),
              Adds.HtmlElementAdder(),
-             Adds.Direction.IN,
+             Adds.Direction.IN, # into HTML element
              Adds.HeadElementAdder()]
 midAdders = [Adds.BodyElementAdder(),
-             Adds.Direction.IN,
-             Adds.PageContentAdder(),
-             Adds.BulletLinkMenuAdder([LinkMenuItem() for i in range(5)]),
-             Adds.Direction.OUT]
+             Adds.Direction.IN, # into body element
+             Adds.PageContentAdder()] 
 basicPageAdders = preAdders + midAdders
 
 if __name__ == "__main__":
@@ -42,7 +42,11 @@ if __name__ == "__main__":
 
     cssFile = cssFiles.pop()
     pages = [
-                Page("korv", "korv är gött", "index.html", "index.html")
+                Page("korv", "korv är gött", "index.html", "index.html"),
+                Page("kielbasa", "kielbasa är gött", "kielbasa.html", "kielbasa.html"),
+                Page("chorizo", "chorizo är gött", "chorizo.html", "chorizo.html")
             ]
     rootCategory = PageCategory("Root", pages, basicPageAdders, "")
+    rootCategory.addAdder(Adds.CategoryMenuAdder(rootCategory))
+    rootCategory.addAdder(Adds.Direction.OUT) # out from body element
     WebsiteBuilder("style.css", "sv").addCategory(rootCategory).build()

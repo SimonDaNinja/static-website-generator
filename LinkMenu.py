@@ -9,20 +9,18 @@ class BulletLinkMenuElement(LinkMenuElement):
         listElement = ContentBuilder.HtmlElement("ul")
         for item in self.menuItems:
             listItemElement = ContentBuilder.HtmlElement("li")
-            listItemElement << item.getFull()
+            listItemElement << item.getLinkElement()
             listElement << listItemElement
         builder << listElement
 
 class LinkMenuItem:
-    def __init__(self):
-        return
+    def __init__(self, text, href):
+        self.text = text
+        self.href = href
 
-    def getFull(self):
+    def getLinkElement(self):
         linkElement = ContentBuilder.HtmlElement("a")
-        linkElement << {"href": "/"}
-        linkElement << ContentBuilder.StringElement("🚧 - ABSTRACT_MENU_ITEM - 🚧")
+        linkElement << {"href": f"'{self.href}'"}
+        linkElement << ContentBuilder.StringElement(self.text)
         return linkElement
-
-    def getBrief(self):
-        return self.getFull()
 

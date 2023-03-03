@@ -6,6 +6,7 @@ from ContentBuilder import HtmlElement, ContentBuilder
 import logging
 
 class WebsiteBuilder:
+
     def __init__(self, cssPathOriginal, lang):
         self.cssPathOriginal = cssPathOriginal
         self.cssPathCopy = "/".join([constants.WEBSITE_PATH, cssPathOriginal])
@@ -31,13 +32,13 @@ class WebsiteBuilder:
         logging.debug(f"adding element: {newElement.__repr__()}; target is: {targetStr}")
         targetForElement << newElement
 
-    def pageToHtml(self, page):
+    def pageToHtml(self, page, category):
         logging.debug("generating HTML from Page Object")
         contentBuilder = ContentBuilder()
         elementStack = []
         previousElement = None
         queuedPop = False
-        for adder in page.adders:
+        for adder in category.adders:
             # adder can be of an Adder class, or it could be a direction
             # first check if it is a direction, and if so, handle it as such
             if type(adder) is Adds.Direction:
@@ -66,7 +67,7 @@ class WebsiteBuilder:
                 self.addElement(contentBuilder, elementStack, stackedElement)
                 queuedPop = False
 
-            previousElement = adder.add(page, self)
+            previousElement = adder.add(page, self, category)
 
         if previousElement is not None:
             self.addElement(contentBuilder, elementStack, previousElement)
@@ -84,7 +85,6 @@ class WebsiteBuilder:
     def build(self):
         shutil.copyfile(self.cssPathOriginal, self.cssPathCopy)
         for category in self.categories:
-            category.setPageAdders()
             for page in category.pages:
-                absoluteOutputFile = "/".join([constants.WEBSITE_PATH, category.relativeOutputDir, page.relativeOutputFile])
-                open(absoluteOutputFile, 'w').write(self.pageToHtml(page))
+                absoluteOutputFile = "/".join([constants.WEBSITE_PATH, page.getRelativeOutputFile(category)])
+                open(absoluteOutputFile, 'w').write(self.pageToHtml(page, category))
