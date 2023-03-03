@@ -49,24 +49,20 @@ if __name__ == "__main__":
     topMenuOptions = [LinkMenuItem(korvPage.briefTitle, "/"),
                       LinkMenuItem(foreignSausagePage.briefTitle, foreignSausagePage.getUrl(categoryPageCategory))]
 
-    preAdders = [Adds.DoctypeElementAdder(),
-                 Adds.HtmlElementAdder(),
-                 Adds.Direction.IN,       # into HTML element
-                 Adds.HeadElementAdder()]
+    basicPageAdders = [Adds.DoctypeElementAdder(),
+                       Adds.HtmlElementAdder(),
+                       Adds.Direction.IN,       # into HTML element
+                       Adds.HeadElementAdder(),
+                       Adds.BodyElementAdder(),
+                       Adds.Direction.IN,       # into body element
+                       Adds.WebsiteFullTitleH1Adder(),
+                       Adds.LinkMenuAdder(topMenuOptions, LinkMenuElementClass = LegacySoffanTopbarMenuElement),
+                       Adds.NavigationHelperAdder(),
+                       Adds.PageFullTitleH2Adder(),
+                       Adds.CategoryBriefMenuAdder(),
+                       Adds.PageContentAdder(),
+                       Adds.Direction.OUT]      # out from body element
 
-    obligatoryPageBodyAdders = [Adds.BodyElementAdder(),
-                                Adds.Direction.IN,       # into body element
-                                Adds.WebsiteFullTitleH1Adder(),
-                                Adds.LinkMenuAdder(topMenuOptions, LinkMenuElementClass = LegacySoffanTopbarMenuElement),
-                                Adds.NavigationHelperAdder(),
-                                Adds.PageFullTitleH2Adder()]
-
-    normalPageBodyAdders = obligatoryPageBodyAdders + \
-                           [Adds.CategoryBriefMenuAdder(),
-                            Adds.PageContentAdder(),
-                            Adds.Direction.OUT]      # out from body element
-
-    basicPageAdders = preAdders + normalPageBodyAdders
     rootCategory.addAdders(basicPageAdders)
     foreignSausageCategory.addAdders(basicPageAdders)
     categoryPageCategory.addAdders(basicPageAdders)
