@@ -22,12 +22,16 @@ class PageCategory:
 
     def addPage(self, page):
         self.pages.append(page)
+        return self
 
     def addPages(self, pages):
         self.pages += pages
+        return self
 
     def addAdder(self, adder):
         self.adders.append(adder)
+        return self
 
     def addAdders(self, adders):
         self.adders += adders
+        return self
