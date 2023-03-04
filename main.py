@@ -39,7 +39,7 @@ if __name__ == "__main__":
     chorizoCategory = PageCategory("Chorizo", [chiliChorizoPage, ostChorizoPage], "chorizo", superCategory = foreignSausageCategory)
 
     #add chorizo page to foreign sausage category
-    chorizoPage = CategoryPage(chorizoCategory, "Sidor om chorizo", chorizoCategory.categoryName, "chorizo är gött", "chorizo.html")
+    chorizoPage = CategoryPage(chorizoCategory, "Sidor om chorizo", chorizoCategory.categoryName, "chorizo är gött", "chorizo.html", "chorizo.html")
     foreignSausageCategory.addPage(chorizoPage)
 
     #category category
@@ -56,8 +56,8 @@ if __name__ == "__main__":
                        Adds.CategoryBriefMenuAdder(category = rootCategory, LinkMenuElementClass = LegacySoffanTopbarMenuElement),
                        Adds.NavigationHelperAdder(),
                        Adds.PageFullTitleH2Adder(),
-                       Adds.CategoryBriefMenuAdder(),
                        Adds.PageContentAdder(),
+                       Adds.CategoryBriefMenuAdder(),
                        Adds.Direction.OUT]      # out from body element
 
     rootCategory.addAdders(basicPageAdders)
@@ -66,4 +66,5 @@ if __name__ == "__main__":
     WebsiteBuilder("style.css", "sv", "🌭Simons korvar", "🌭Simons korvar") \
         .addCategory(rootCategory) \
         .addCategory(foreignSausageCategory) \
-        .addCategory(chorizoCategory).build()
+        .addCategory(chorizoCategory) \
+        .build()
