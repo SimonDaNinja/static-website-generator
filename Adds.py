@@ -19,7 +19,7 @@ class Adder:
 class HeadElementAdder(Adder):
     def add(self, page, websiteBuilder, category):
         headElement = HtmlElement("head")
-        headElement << HtmlElement("title", contents = f"{websiteBuilder.briefTitle} | {page.briefTitle}")
+        headElement << HtmlElement("title", contents = f"{page.briefTitle} | {websiteBuilder.briefTitle}")
         headElement << HtmlElement("link", properties = {
                                                     "rel":"'stylesheet'",
                                                     "type":"'text/css'",
