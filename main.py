@@ -63,7 +63,7 @@ if __name__ == "__main__":
     rootCategory.addAdders(basicPageAdders)
     foreignSausageCategory.addAdders(basicPageAdders)
     chorizoCategory.addAdders(basicPageAdders)
-    WebsiteBuilder("style.css", "sv", "🌭Simons korvar", "🌭Simons korvar") \
+    WebsiteBuilder("style.css", "sv", "🌭 Simons korvar", "🌭 Simons korvar") \
         .addCategory(rootCategory) \
         .addCategory(foreignSausageCategory) \
         .addCategory(chorizoCategory) \
