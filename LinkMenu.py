@@ -1,4 +1,4 @@
-import ContentBuilder
+from . import ContentBuilder
 
 class LinkMenuElement(ContentBuilder.ContentElement):
     def __init__(self, menuItems):

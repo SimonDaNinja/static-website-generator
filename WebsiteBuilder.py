@@ -1,9 +1,9 @@
-import constants
+from . import constants
 import os
 import logging
 import shutil
-import Adds
-from ContentBuilder import HtmlElement, ContentBuilder
+from . import Adds
+from .ContentBuilder import HtmlElement, ContentBuilder
 import logging
 
 class WebsiteBuilder:

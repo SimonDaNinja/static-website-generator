@@ -1,13 +1,13 @@
-import constants
+from . import constants
 import shutil
 import os
-from WebsiteBuilder import WebsiteBuilder
-from ContentBuilder import HtmlElement, ContentBuilder
+from .WebsiteBuilder import WebsiteBuilder
+from .ContentBuilder import HtmlElement, ContentBuilder
 import logging
-import Adds
-from LinkMenu import LegacySoffanTopbarMenuElement, LinkMenuItem
-from PageCategory import PageCategory
-from Page import Page, CategoryPage, RssPage, BlogPage
+from . import Adds
+from .LinkMenu import LegacySoffanTopbarMenuElement, LinkMenuItem
+from .PageCategory import PageCategory
+from .Page import Page, CategoryPage, RssPage, BlogPage
 
 logging.basicConfig(format="%(levelname)s [%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s")#, level=logging.DEBUG)
 

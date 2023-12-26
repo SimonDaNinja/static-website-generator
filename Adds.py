@@ -1,7 +1,7 @@
-from LinkMenu import BulletLinkMenuElement, LinkMenuItem, LinkMenuElement
-from ContentBuilder import HtmlElement, StringElement, NullElement
+from .LinkMenu import BulletLinkMenuElement, LinkMenuItem, LinkMenuElement
+from .ContentBuilder import HtmlElement, StringElement, NullElement
 from enum import Enum, auto
-from Page import CategoryPage, RssPage
+from .Page import CategoryPage, RssPage
 import logging
 
 DefaultLinkMenuElement= BulletLinkMenuElement
