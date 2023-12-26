@@ -7,7 +7,7 @@ import logging
 import Adds
 from LinkMenu import LegacySoffanTopbarMenuElement, LinkMenuItem
 from PageCategory import PageCategory
-from Page import Page, CategoryPage
+from Page import Page, CategoryPage, RssPage, BlogPage
 
 logging.basicConfig(format="%(levelname)s [%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s")#, level=logging.DEBUG)
 
@@ -46,6 +46,24 @@ if __name__ == "__main__":
     foreignSausagePage = CategoryPage(foreignSausageCategory, "Sidor om utländsk korv", foreignSausageCategory.categoryName, "Utländsk korv är gött", "utländsk korv.html")
     rootCategory.addPage(foreignSausagePage)
 
+    #blog category
+    godJulPage = BlogPage("2023-12-26: God jul.html")
+    blogPages = [godJulPage]
+    blogCategory = PageCategory("Blogg", blogPages, "blogg", superCategory = rootCategory)
+
+    blogPage = CategoryPage(blogCategory, "Bloggposter", blogCategory.categoryName, "Blogg", "blogg.html")
+    rootCategory.addPage(blogPage)
+
+
+    #rss
+
+    rssAdders = [Adds.RssElementAdder(),
+                 Adds.Direction.IN,
+                 Adds.RssChannelElementAdder()]
+
+    rssPage = RssPage([blogCategory], "RSS", "RSS", "", "feed.xml", bodyfile=None, adders = rssAdders)
+    rootCategory.addPage(rssPage)
+
     basicPageAdders = [Adds.DoctypeElementAdder(),
                        Adds.HtmlElementAdder(),
                        Adds.Direction.IN,       # into HTML element
@@ -60,11 +78,14 @@ if __name__ == "__main__":
                        Adds.CategoryBriefMenuAdder(),
                        Adds.Direction.OUT]      # out from body element
 
+
     rootCategory.addAdders(basicPageAdders)
     foreignSausageCategory.addAdders(basicPageAdders)
     chorizoCategory.addAdders(basicPageAdders)
-    WebsiteBuilder("style.css", "sv", "🌭 Simons korvar", "🌭 Simons korvar") \
+    blogCategory.addAdders(basicPageAdders)
+    WebsiteBuilder("style.css", "sv", "🌭 Simons korvar", "🌭 Simons korvar", "test.simonssoffa.xyz", "En hemsida om diverse korvar typ") \
         .addCategory(rootCategory) \
         .addCategory(foreignSausageCategory) \
         .addCategory(chorizoCategory) \
+        .addCategory(blogCategory) \
         .build()

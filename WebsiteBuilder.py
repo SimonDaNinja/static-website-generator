@@ -8,7 +8,7 @@ import logging
 
 class WebsiteBuilder:
 
-    def __init__(self, cssPathOriginal, lang, fullTitle, briefTitle):
+    def __init__(self, cssPathOriginal, lang, fullTitle, briefTitle, domainName, description):
         self.cssPathOriginal = cssPathOriginal
         self.cssPathCopy = "/".join([constants.WEBSITE_PATH, cssPathOriginal])
         self.cssHref = self.cssPathCopy.split(constants.WEBSITE_PATH)[-1]
@@ -16,6 +16,8 @@ class WebsiteBuilder:
         self.fullTitle = fullTitle
         self.briefTitle = briefTitle
         self.categories = []
+        self.domainName = domainName
+        self.description = description
 
     def addCategory(self, category):
         self.categories.append(category)
@@ -41,7 +43,8 @@ class WebsiteBuilder:
         elementStack = []
         previousElement = None
         queuedPop = False
-        for adder in category.adders:
+        adders = page.adders if page.adders is not None else category.adders
+        for adder in adders:
             # adder can be of an Adder class, or it could be a direction
             # first check if it is a direction, and if so, handle it as such
             if type(adder) is Adds.Direction:

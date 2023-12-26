@@ -1,7 +1,8 @@
 from LinkMenu import BulletLinkMenuElement, LinkMenuItem, LinkMenuElement
 from ContentBuilder import HtmlElement, StringElement, NullElement
 from enum import Enum, auto
-from Page import CategoryPage
+from Page import CategoryPage, RssPage
+import logging
 
 DefaultLinkMenuElement= BulletLinkMenuElement
 
@@ -67,6 +68,7 @@ class CategoryMenuAdder(LinkMenuAdder):
             title = page.briefTitle if self.brief else page.fullTitle
             self.menuItems.append(LinkMenuItem(title,
                                                page.getUrl(menuCategory)))
+            logging.debug(f"adding {title} to menu items")
         return super().add(page, websiteBuilder, category)
 
 class CategoryFullMenuAdder(CategoryMenuAdder):
@@ -163,4 +165,55 @@ class NavigationHelperAdder(Adder):
             paragraphElement << StringElement(separator)
         paragraphElement << StringElement(page.briefTitle)
         return paragraphElement
+
+# Adders for RSS feed
+class RssElementAdder(Adder):
+    def add(self, page, websiteBuilder, category):
+        if not isinstance(page, RssPage):
+            return NullElement()
+        return HtmlElement("rss", properties = {"version":f"\"2.0\""})
+
+class RssChannelElementAdder(Adder):
+    def add(self, page, websiteBuilder, category):
+        if not isinstance(page, RssPage):
+            return NullElement()
+        rssChannelElement = HtmlElement("channel")
+        rssChannelElement << RssChannelTitleElementAdder().add(page, websiteBuilder, category)
+        rssChannelElement << RssChannelLinkElementAdder().add(page, websiteBuilder, category)
+        rssChannelElement << RssChannelDescriptionElementAdder().add(page, websiteBuilder, category)
+        rssItem = page.getNextItem()
+        while rssItem is not None:
+            rssItemElement = HtmlElement("item")
+            rssItemElement << HtmlElement("title", contents = rssItem.getTitle())
+            rssItemElement << HtmlElement("link", contents = f"https://{websiteBuilder.domainName}/{rssItem.getLink()}")
+            rssItemElement << HtmlElement("guid", contents = rssItem.getGuid(), properties = {"isPermaLink": "\"false\""})
+            rssItemElement << HtmlElement("pubDate", contents = rssItem.getPubDate())
+
+            descriptionElement = HtmlElement("description")
+            descriptionElement << StringElement(rssItem.getDescription())
+
+            rssItemElement << descriptionElement
+
+            rssChannelElement << rssItemElement
+            rssItem = page.getNextItem()
+        page.resetItemIndex()
+        return rssChannelElement
+
+class RssChannelTitleElementAdder(Adder):
+    def add(self, page, websiteBuilder, category):
+        if not isinstance(page, RssPage):
+            return NullElement()
+        return HtmlElement("title", contents = f"{websiteBuilder.fullTitle}")
+
+class RssChannelDescriptionElementAdder(Adder):
+    def add(self, page, websiteBuilder, category):
+        if not isinstance(page, RssPage):
+            return NullElement()
+        return HtmlElement("description", contents = f"{websiteBuilder.description}")
+
+class RssChannelLinkElementAdder(Adder):
+    def add(self, page, websiteBuilder, category):
+        if not isinstance(page, RssPage):
+            return NullElement()
+        return HtmlElement("link", contents = f"https://{websiteBuilder.domainName}")
 
