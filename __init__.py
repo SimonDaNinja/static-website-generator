@@ -35,10 +35,10 @@ from .constants import \
         APPLICATION_NAME
 
 from .ContentBuilder import \
-        ContentBuilder,
-        ContentElement,
-        StringElement,
-        NullElement,
+        ContentBuilder, \
+        ContentElement, \
+        StringElement, \
+        NullElement, \
         HtmlElement
 
 from .LinkMenu import \
