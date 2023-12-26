@@ -51,7 +51,7 @@ class BlogPage(RssAblePage):
 
         description = maxDescription[:lastIndex]
         super().__init__(date = date, fullTitle = fullTitle, briefTitle = briefTitle,
-                         description = description, fileName = bodyfile, bodyfile = bodyfile)
+                         description = description, fileName = bodyfile.split('/')[-1], bodyfile = bodyfile)
 
 class RssPage(Page):
     def __init__(self, categories, *args, **kwargs):
