@@ -30,8 +30,8 @@ from .Adds import \
         RssChannelLinkElementAdder
 
 from .constants import \
-        WEBSITE_PATH \
-        INDEX_PATH \
+        WEBSITE_PATH, \
+        INDEX_PATH, \
         APPLICATION_NAME
 
 from .ContentBuilder import \
