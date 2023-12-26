@@ -41,7 +41,7 @@ class BlogPage(RssAblePage):
         assert x, f"incorrecly formated blog bodyfile name: \"{bodyfile}\""
 
         date = (int(x.group(1)), int(x.group(2)), int(x.group(3)))
-        fullTitle = x.group(4)
+        fullTitle = bodyfile[:-5]
         briefTitle = fullTitle
         contents = open(bodyfile, 'r').read()
 
