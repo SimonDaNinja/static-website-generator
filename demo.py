@@ -61,7 +61,7 @@ if __name__ == "__main__":
                  Adds.Direction.IN,
                  Adds.RssChannelElementAdder()]
 
-    rssPage = RssPage([blogCategory], "RSS", "RSS", "", "feed.xml", bodyfile=None, adders = rssAdders)
+    rssPage = RssPage([blogCategory], ":rss:RSS", ":rss:RSS", "", "feed.xml", bodyfile=None, adders = rssAdders)
     rootCategory.addPage(rssPage)
 
     basicPageAdders = [Adds.DoctypeElementAdder(),
@@ -83,7 +83,8 @@ if __name__ == "__main__":
     foreignSausageCategory.addAdders(basicPageAdders)
     chorizoCategory.addAdders(basicPageAdders)
     blogCategory.addAdders(basicPageAdders)
-    WebsiteBuilder("style.css", "sv", "🌭 Simons korvar", "🌭 Simons korvar", "test.simonssoffa.xyz", "En hemsida om diverse korvar typ") \
+    WebsiteBuilder("style.css", "sv", "🌭 Simons korvar", "🌭 Simons korvar", "test.simonssoffa.xyz", "En hemsida om diverse korvar typ", 
+                   { "rss" : "rss-icon.png"}) \
         .addCategory(rootCategory) \
         .addCategory(foreignSausageCategory) \
         .addCategory(chorizoCategory) \

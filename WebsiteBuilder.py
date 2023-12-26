@@ -8,7 +8,7 @@ import logging
 
 class WebsiteBuilder:
 
-    def __init__(self, cssPathOriginal, lang, fullTitle, briefTitle, domainName, description):
+    def __init__(self, cssPathOriginal, lang, fullTitle, briefTitle, domainName, description, symbolDict):
         self.cssPathOriginal = cssPathOriginal
         self.cssPathCopy = "/".join([constants.WEBSITE_PATH, cssPathOriginal])
         self.cssHref = self.cssPathCopy.split(constants.WEBSITE_PATH)[-1]
@@ -18,6 +18,8 @@ class WebsiteBuilder:
         self.categories = []
         self.domainName = domainName
         self.description = description
+        self.symbolDict = symbolDict
+        self.symbolsDir = "/".join([constants.WEBSITE_PATH, "symbols"])
 
     def addCategory(self, category):
         self.categories.append(category)
@@ -86,10 +88,22 @@ class WebsiteBuilder:
             stackedElement = elementStack.pop()
             self.addElement(contentBuilder, elementStack, stackedElement)
 
-        return str(contentBuilder)
+        outputStr = str(contentBuilder)
+        for name, imagePath in self.symbolDict.items():
+            linkText = f"<img src = \"{imagePath}\" class=\"icon\">"
+            outputStr = outputStr.replace(f":{name}:", linkText)
+
+        return outputStr
 
     def build(self):
         shutil.copyfile(self.cssPathOriginal, self.cssPathCopy)
+        if not os.path.exists(self.symbolsDir):
+            os.makedirs(self.symbolsDir)
+            for name, imagePath in self.symbolDict.items():
+                extension = imagePath.split('.')[-1]
+                newFile = "/".join([self.symbolsDir, f"{name}.{extension}"])
+                shutil.copyfile(imagePath, newFile)
+                self.symbolDict[name] = f"/symbols/{name}.{extension}"
         for category in self.categories:
             absoluteOutputDir = "/".join([constants.WEBSITE_PATH, category.relativeOutputDir])
             if not os.path.exists(absoluteOutputDir):

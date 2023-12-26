@@ -2,4 +2,5 @@ website/
 bodies/
 *.css
 *.html
+*.png
 __pycache__
