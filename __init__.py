@@ -47,7 +47,7 @@ from .LinkMenu import \
         LegacySoffanTopbarMenuElement, \
         LinkMenuItem
 
-from .Page import
+from .Page import \
         Page, \
         CategoryPage, \
         RssAblePage, \
