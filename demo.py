@@ -71,11 +71,11 @@ if __name__ == "__main__":
                        Adds.BodyElementAdder(),
                        Adds.Direction.IN,       # into body element
                        Adds.WebsiteFullTitleH1Adder(),
-                       Adds.CategoryBriefMenuAdder(category = rootCategory, LinkMenuElementClass = LegacySoffanTopbarMenuElement),
+                       Adds.CategoryMenuAdder(category = rootCategory, LinkMenuElementClass = LegacySoffanTopbarMenuElement),
                        Adds.NavigationHelperAdder(),
                        Adds.PageFullTitleH2Adder(),
                        Adds.PageContentAdder(),
-                       Adds.CategoryBriefMenuAdder(),
+                       Adds.CategoryMenuAdder(),
                        Adds.Direction.OUT]      # out from body element
 
 

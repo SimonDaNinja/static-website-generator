@@ -5,9 +5,9 @@ import re
 from email.utils import formatdate
 
 class Page:
-    def __init__(self, fullTitle, briefTitle, description, fileName, bodyfile=None, adders = None):
-        self.fullTitle = fullTitle
-        self.briefTitle = briefTitle
+    def __init__(self, internalTitle, externalTitle, description, fileName, bodyfile=None, adders = None):
+        self.internalTitle = internalTitle
+        self.externalTitle = externalTitle
         self.description = description
         self.fileName = fileName
         self.bodyfile = bodyfile
@@ -41,17 +41,18 @@ class BlogPage(RssAblePage):
         assert x, f"incorrecly formated blog bodyfile name: \"{bodyfile}\""
 
         date = (int(x.group(1)), int(x.group(2)), int(x.group(3)))
-        fullTitle = bodyfile[:-5]
-        briefTitle = fullTitle
+        internalTitle = f"{x.group(1)}-{x.group(2)}-{x.group(3)}: {x.group(4)}"
+        externalTitle = internalTitle
         contents = open(bodyfile, 'r').read()
 
         maxDescriptionLength = min(160, len(contents))
         maxDescription = contents[:maxDescriptionLength]
         lastIndex = maxDescription.rindex(" ")
+        fileName = bodyfile.split('/')[-1]
 
         description = maxDescription[:lastIndex]
-        super().__init__(date = date, fullTitle = fullTitle, briefTitle = briefTitle,
-                         description = description, fileName = bodyfile.split('/')[-1], bodyfile = bodyfile)
+        super().__init__(date = date, internalTitle = internalTitle, externalTitle = externalTitle,
+                         description = description, fileName = fileName, bodyfile = bodyfile)
 
 class RssPage(Page):
     def __init__(self, categories, *args, **kwargs):
@@ -69,7 +70,7 @@ class RssPage(Page):
                     continue
                 items.append(RssItem(page))
 
-        items.sort(key = lambda x : datetime.datetime(x.getYear(), x.getMonth(), x.getDay()))
+        items.sort(key = lambda x : datetime.datetime(x.getYear(), x.getMonth(), x.getDay()), reverse=True)
         return items
 
     def getNextItem(self):
@@ -87,10 +88,10 @@ class RssItem:
     def __init__(self, rssAblePage):
         self.year, self.month, self.day = rssAblePage.date
         if rssAblePage.bodyfile is not None:
-            self.description = open(rssAblePage.bodyfile, 'r').read()
+            self.description = "<![CDATA[\n" + open(rssAblePage.bodyfile, 'r').read() + "\n]]>"
         else:
             self.description = rssAblePage.description
-        self.title = rssAblePage.fullTitle
+        self.title = rssAblePage.internalTitle
         self.link = rssAblePage.fileName
         self.guid = f"{self.getYear()}-{self.getMonth()}-{self.getDay()}: {self.getTitle()}"
         return

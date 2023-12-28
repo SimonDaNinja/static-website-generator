@@ -8,18 +8,19 @@ import logging
 
 class WebsiteBuilder:
 
-    def __init__(self, cssPathOriginal, lang, fullTitle, briefTitle, domainName, description, symbolDict):
+    def __init__(self, cssPathOriginal, lang, internalTitle, externalTitle, domainName, description, symbolDict, copyDirs):
         self.cssPathOriginal = cssPathOriginal
         self.cssPathCopy = "/".join([constants.WEBSITE_PATH, cssPathOriginal])
         self.cssHref = self.cssPathCopy.split(constants.WEBSITE_PATH)[-1]
         self.lang = lang
-        self.fullTitle = fullTitle
-        self.briefTitle = briefTitle
+        self.internalTitle = internalTitle
+        self.externalTitle = externalTitle
         self.categories = []
         self.domainName = domainName
         self.description = description
         self.symbolDict = symbolDict
         self.symbolsDir = "/".join([constants.WEBSITE_PATH, "symbols"])
+        self.copyDirs = copyDirs
 
     def addCategory(self, category):
         self.categories.append(category)
@@ -40,7 +41,7 @@ class WebsiteBuilder:
         targetForElement << newElement
 
     def pageToHtml(self, page, category):
-        logging.debug(f"generating HTML from Page Object for:\npage: {page.fullTitle}\n, category: {category.categoryName}")
+        logging.debug(f"generating HTML from Page Object for:\npage: {page.internalTitle}\n, category: {category.categoryName}")
         contentBuilder = ContentBuilder()
         elementStack = []
         previousElement = None
@@ -89,9 +90,12 @@ class WebsiteBuilder:
             self.addElement(contentBuilder, elementStack, stackedElement)
 
         outputStr = str(contentBuilder)
-        for name, imagePath in self.symbolDict.items():
-            linkText = f"<img src = \"{imagePath}\" class=\"icon\">"
-            outputStr = outputStr.replace(f":{name}:", linkText)
+        for name, symbol in self.symbolDict.items():
+            if symbol[0]:
+                replacementText = f"<img src = \"{symbol[1]}\" class=\"icon\">"
+            else:
+                replacementText = symbol[1]
+            outputStr = outputStr.replace(f":{name}:", replacementText)
 
         return outputStr
 
@@ -102,8 +106,11 @@ class WebsiteBuilder:
             for name, imagePath in self.symbolDict.items():
                 extension = imagePath.split('.')[-1]
                 newFile = "/".join([self.symbolsDir, f"{name}.{extension}"])
-                shutil.copyfile(imagePath, newFile)
-                self.symbolDict[name] = f"/symbols/{name}.{extension}"
+                if os.path.exists(imagePath):
+                    shutil.copyfile(imagePath, newFile)
+                    self.symbolDict[name] = (True, f"/symbols/{name}.{extension}")
+                else:
+                    self.symbolDict[name] = (False, imagePath)
         for category in self.categories:
             absoluteOutputDir = "/".join([constants.WEBSITE_PATH, category.relativeOutputDir])
             if not os.path.exists(absoluteOutputDir):
@@ -111,3 +118,9 @@ class WebsiteBuilder:
             for page in category.pages:
                 absoluteOutputFile = "/".join([constants.WEBSITE_PATH, page.getRelativeOutputFile(category)])
                 open(absoluteOutputFile, 'w').write(self.pageToHtml(page, category))
+        for copyDir in self.copyDirs:
+            if os.path.exists(copyDir):
+                for copyFile in os.listdir(copyDir):
+                    originalPath = "/".join([copyDir, copyFile])
+                    copyPath = "/".join([constants.WEBSITE_PATH, copyFile])
+                    shutil.copyfile(originalPath, copyPath)

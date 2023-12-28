@@ -20,7 +20,7 @@ class Adder:
 class HeadElementAdder(Adder):
     def add(self, page, websiteBuilder, category):
         headElement = HtmlElement("head")
-        headElement << HtmlElement("title", contents = f"{page.briefTitle} | {websiteBuilder.briefTitle}")
+        headElement << HtmlElement("title", contents = f"{page.externalTitle} | {websiteBuilder.externalTitle}")
         headElement << HtmlElement("link", properties = {
                                                     "rel":"'stylesheet'",
                                                     "type":"'text/css'",
@@ -50,10 +50,9 @@ class LinkMenuAdder(Adder):
         return self.LinkMenuElementClass(self.menuItems)
 
 class CategoryMenuAdder(LinkMenuAdder):
-    def __init__(self, *args, category = None, brief = True, LinkMenuElementClass = DefaultLinkMenuElement, **kwargs):
-        super().__init__(menuItems = list(), *args, LinkMenuElementClass = LinkMenuElementClass, **kwargs)
+    def __init__(self, category = None, LinkMenuElementClass = DefaultLinkMenuElement, **kwargs):
+        super().__init__(menuItems = list(), LinkMenuElementClass = LinkMenuElementClass, **kwargs)
         self.category = category
-        self.brief = brief
 
     def add(self, page, websiteBuilder, category):
         if self.category == None:
@@ -65,21 +64,12 @@ class CategoryMenuAdder(LinkMenuAdder):
         preOutputFiles = {}
         self.menuItems = list()
         for page in menuCategory.pages:
-            title = page.briefTitle if self.brief else page.fullTitle
+            title = page.externalTitle
             self.menuItems.append(LinkMenuItem(title,
                                                page.getUrl(menuCategory)))
             logging.debug(f"adding {title} to menu items")
         return super().add(page, websiteBuilder, category)
 
-class CategoryFullMenuAdder(CategoryMenuAdder):
-    def __init__(self, category = None, *args, LinkMenuElementClass = DefaultLinkMenuElement, **kwargs):
-        super().__init__(*args, category = category, brief = False, LinkMenuElementClass = LinkMenuElementClass, **kwargs)
-        self.category = category
-
-class CategoryBriefMenuAdder(CategoryMenuAdder):
-    def __init__(self, category = None, *args, LinkMenuElementClass = DefaultLinkMenuElement, **kwargs):
-        super().__init__(*args, category = category, brief = True, LinkMenuElementClass = LinkMenuElementClass, **kwargs)
-        self.category = category
 
 class HtmlElementAdder(Adder):
     def add(self, page, websiteBuilder, category):
@@ -92,53 +82,29 @@ class DoctypeElementAdder(Adder):
     def add(self, page, websiteBuilder, category):
         return HtmlElement(f"!DOCTYPE {self.doctype}")
 
-class PageFullTitleH1Adder(Adder):
+class PageTitleH1Adder(Adder):
     def add(self, page, websiteBuilder, category):
-        return HtmlElement("h1", [page.fullTitle])
+        return HtmlElement("h1", [page.internalTitle])
 
-class PageFullTitleH2Adder(Adder):
+class PageTitleH2Adder(Adder):
     def add(self, page, websiteBuilder, category):
-        return HtmlElement("h2", [page.fullTitle])
+        return HtmlElement("h2", [page.internalTitle])
 
-class PageFullTitleH3Adder(Adder):
+class PageTitleH3Adder(Adder):
     def add(self, page, websiteBuilder, category):
-        return HtmlElement("h3", [page.fullTitle])
+        return HtmlElement("h3", [page.internalTitle])
 
-class PageBriefTitleH1Adder(Adder):
+class WebsiteTitleH1Adder(Adder):
     def add(self, page, websiteBuilder, category):
-        return HtmlElement("h1", [page.briefTitle])
+        return HtmlElement("h1", [websiteBuilder.internalTitle])
 
-class PageBriefTitleH2Adder(Adder):
+class WebsiteTitleH2Adder(Adder):
     def add(self, page, websiteBuilder, category):
-        return HtmlElement("h2", [page.briefTitle])
+        return HtmlElement("h2", [websiteBuilder.internalTitle])
 
-class PageBriefTitleH3Adder(Adder):
+class WebsiteTitleH3Adder(Adder):
     def add(self, page, websiteBuilder, category):
-        return HtmlElement("h3", [page.briefTitle])
-
-class WebsiteFullTitleH1Adder(Adder):
-    def add(self, page, websiteBuilder, category):
-        return HtmlElement("h1", [websiteBuilder.fullTitle])
-
-class WebsiteFullTitleH2Adder(Adder):
-    def add(self, page, websiteBuilder, category):
-        return HtmlElement("h2", [websiteBuilder.fullTitle])
-
-class WebsiteFullTitleH3Adder(Adder):
-    def add(self, page, websiteBuilder, category):
-        return HtmlElement("h3", [websiteBuilder.fullTitle])
-
-class WebsiteBriefTitleH1Adder(Adder):
-    def add(self, page, websiteBuilder, category):
-        return HtmlElement("h1", [websiteBuilder.briefTitle])
-
-class WebsiteBriefTitleH2Adder(Adder):
-    def add(self, page, websiteBuilder, category):
-        return HtmlElement("h2", [websiteBuilder.briefTitle])
-
-class WebsiteBriefTitleH3Adder(Adder):
-    def add(self, page, websiteBuilder, category):
-        return HtmlElement("h3", [websiteBuilder.briefTitle])
+        return HtmlElement("h3", [websiteBuilder.internalTitle])
 
 class NavigationHelperAdder(Adder):
     def add(self, page, websiteBuilder, category):
@@ -152,7 +118,7 @@ class NavigationHelperAdder(Adder):
             nextCategory = currentPage.category.superCategory
             link = HtmlElement("a")
             link << {"href" : currentPage.getUrl(nextCategory)}
-            link << StringElement(currentPage.briefTitle)
+            link << StringElement(currentPage.externalTitle)
             links.append(link)
             if nextCategory is None:
                 break
@@ -163,10 +129,13 @@ class NavigationHelperAdder(Adder):
         for link in links:
             paragraphElement << link
             paragraphElement << StringElement(separator)
-        paragraphElement << StringElement(page.briefTitle)
+        paragraphElement << StringElement(page.externalTitle)
         return paragraphElement
 
 # Adders for RSS feed
+class XmlElementAdder(Adder):
+    def add(self, page, websiteBuilder, category):
+        return StringElement("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>")
 class RssElementAdder(Adder):
     def add(self, page, websiteBuilder, category):
         if not isinstance(page, RssPage):
@@ -203,7 +172,7 @@ class RssChannelTitleElementAdder(Adder):
     def add(self, page, websiteBuilder, category):
         if not isinstance(page, RssPage):
             return NullElement()
-        return HtmlElement("title", contents = f"{websiteBuilder.fullTitle}")
+        return HtmlElement("title", contents = f"{websiteBuilder.externalTitle}")
 
 class RssChannelDescriptionElementAdder(Adder):
     def add(self, page, websiteBuilder, category):

@@ -6,23 +6,16 @@ from .Adds import \
         PageContentAdder, \
         LinkMenuAdder, \
         CategoryMenuAdder, \
-        CategoryFullMenuAdder, \
-        CategoryBriefMenuAdder, \
         HtmlElementAdder, \
         DoctypeElementAdder, \
-        PageFullTitleH1Adder, \
-        PageFullTitleH2Adder, \
-        PageFullTitleH3Adder, \
-        PageBriefTitleH1Adder, \
-        PageBriefTitleH2Adder, \
-        PageBriefTitleH3Adder, \
-        WebsiteFullTitleH1Adder, \
-        WebsiteFullTitleH2Adder, \
-        WebsiteFullTitleH3Adder, \
-        WebsiteBriefTitleH1Adder, \
-        WebsiteBriefTitleH2Adder, \
-        WebsiteBriefTitleH3Adder, \
+        PageTitleH1Adder, \
+        PageTitleH2Adder, \
+        PageTitleH3Adder, \
+        WebsiteTitleH1Adder, \
+        WebsiteTitleH2Adder, \
+        WebsiteTitleH3Adder, \
         NavigationHelperAdder, \
+        XmlElementAdder, \
         RssElementAdder, \
         RssChannelElementAdder, \
         RssChannelTitleElementAdder, \

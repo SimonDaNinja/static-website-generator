@@ -19,8 +19,6 @@ class ContentBuilder:
         elif isinstance(other, ContentElement):
             other.addSelf(self)
         else:
-            print(type(other))
-            print(other)
             raise TypeError
         return self
 
@@ -49,6 +47,8 @@ class StringElement(ContentElement):
             return
         while self.string and self.string[0] == " ":
             self.string = self.string[1:]
+        if builder.string:
+            builder.string += "\n"
         if (len(self.string)+builder.indentation) > builder.maxWidth:
             spaces = [i for i, letter in enumerate(self.string) if letter==" "]
             cutIndex = 0
@@ -65,8 +65,6 @@ class StringElement(ContentElement):
             builder << firstString
             builder << secondString
             return
-        if builder.string:
-            builder.string += "\n"
         builder.string += " "*builder.indentation
         builder.string += self.string
     def __str__(self):
