@@ -50,7 +50,9 @@ class BlogPage(RssAblePage):
         lastIndex = maxDescription.rindex(" ")
         fileName = bodyfile.split('/')[-1]
 
-        description = maxDescription[:lastIndex]
+        # TODO: fix description extraction
+        #description = maxDescription[:lastIndex]
+        description = None
         super().__init__(date = date, internalTitle = internalTitle, externalTitle = externalTitle,
                          description = description, fileName = fileName, bodyfile = bodyfile)
 

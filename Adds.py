@@ -26,9 +26,13 @@ class HeadElementAdder(Adder):
                                                     "type":"'text/css'",
                                                     "href":f"{websiteBuilder.cssHref}"})
         headElement << HtmlElement("meta", properties = {"charset":"\"UTF-8\""})
+        if page.description is not None:
+            description = page.description
+        else:
+            description = websiteBuilder.description
         headElement << HtmlElement("meta", properties = {
                                                     "name":"\"Description\"",
-                                                    "content":f"\"{page.description}\""
+                                                    "content":f"\"{description}\""
                                                     })
         return headElement
 
