@@ -70,7 +70,7 @@ class RssPage(Page):
             for page in pages:
                 if not isinstance(page, RssAblePage):
                     continue
-                items.append(RssItem(page))
+                items.append(RssItem(page, category))
 
         items.sort(key = lambda x : datetime.datetime(x.getYear(), x.getMonth(), x.getDay()), reverse=True)
         return items
@@ -87,14 +87,14 @@ class RssPage(Page):
         self.itemIndex = 0
 
 class RssItem:
-    def __init__(self, rssAblePage):
+    def __init__(self, rssAblePage, category):
         self.year, self.month, self.day = rssAblePage.date
         if rssAblePage.bodyfile is not None:
             self.description = "<![CDATA[\n" + open(rssAblePage.bodyfile, 'r').read() + "\n]]>"
         else:
             self.description = rssAblePage.description
         self.title = rssAblePage.internalTitle
-        self.link = rssAblePage.fileName
+        self.link = rssAblePage.getUrl(category)
         self.guid = f"{self.getYear()}-{self.getMonth()}-{self.getDay()}: {self.getTitle()}"
         return
 
