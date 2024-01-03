@@ -158,7 +158,7 @@ class RssChannelElementAdder(Adder):
         while rssItem is not None:
             rssItemElement = HtmlElement("item")
             rssItemElement << HtmlElement("title", contents = rssItem.getTitle())
-            rssItemElement << HtmlElement("link", contents = f"https://{websiteBuilder.domainName}/{rssItem.getLink()}")
+            rssItemElement << HtmlElement("link", contents = f"https://{websiteBuilder.domainName}{rssItem.getLink()}")
             rssItemElement << HtmlElement("guid", contents = rssItem.getGuid(), properties = {"isPermaLink": "\"false\""})
             rssItemElement << HtmlElement("pubDate", contents = rssItem.getPubDate())
 
