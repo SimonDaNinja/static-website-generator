@@ -95,7 +95,7 @@ class RssItem:
             self.description = rssAblePage.description
         self.title = rssAblePage.internalTitle
         self.link = rssAblePage.getUrl(category)
-        self.guid = f"{self.getYear()}-{self.getMonth()}-{self.getDay()}: {self.getTitle()}"
+        self.guid = f"{rssAblePage.externalTitle}"
         return
 
     def getYear(self):
