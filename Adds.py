@@ -25,6 +25,10 @@ class HeadElementAdder(Adder):
                                                     "rel":"'stylesheet'",
                                                     "type":"'text/css'",
                                                     "href":f"{websiteBuilder.cssHref}"})
+        if websiteBuilder.faviconPath is not None:
+            headElement << HtmlElement("link", properties = {
+                                                    "rel":"\"icon\"",
+                                                    "href":websiteBuilder.faviconPath})
         headElement << HtmlElement("meta", properties = {"charset":"\"UTF-8\""})
         if page.description is not None:
             description = page.description

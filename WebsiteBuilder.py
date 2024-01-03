@@ -8,7 +8,7 @@ import logging
 
 class WebsiteBuilder:
 
-    def __init__(self, cssPathOriginal, lang, internalTitle, externalTitle, domainName, description, symbolDict, copyDirs):
+    def __init__(self, cssPathOriginal, lang, internalTitle, externalTitle, domainName, description, symbolDict, copyDirs, faviconPath=None):
         self.cssPathOriginal = cssPathOriginal
         self.cssPathCopy = "/".join([constants.WEBSITE_PATH, cssPathOriginal])
         self.cssHref = self.cssPathCopy.split(constants.WEBSITE_PATH)[-1]
@@ -21,6 +21,7 @@ class WebsiteBuilder:
         self.symbolDict = symbolDict
         self.symbolsDir = "/".join([constants.WEBSITE_PATH, "symbols"])
         self.copyDirs = copyDirs
+        self.faviconPath = faviconPath
 
     def addCategory(self, category):
         self.categories.append(category)
